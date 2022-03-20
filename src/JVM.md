@@ -36,3 +36,16 @@
 - 位置：`JVM`是运行在操作系统之上的，它与硬件没有直接的交互
 
   ![](https://img-blog.csdnimg.cn/5d96dbd8c8b140e9b581b313ebdc0a25.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+## 1.2 `JVM`整体结构
+
+【类装载器子系统、运行时数据区、执行引擎】
+
+- `HotSpot VM`是目前市面上高性能虚拟机的代表作之一
+- 它采用解释器与即时编译器并存的架构
+- 在今天，`Java`程序的运行性能早已脱胎换骨，已经达到可以和`C/C++`一较高下的地步
+
+`Class Files`字节码文件加载到类装载器子系统，生成到运行时数据区`(Runtime Data Area)`【方法去和堆数据是多线程共享的，栈、本地方法栈、程序计数器都是不共享的】【非常重要的一部分】 ---> 执行引擎【解释器、垃圾回收器】，解释运行【用到解释器，只用解释器的话，如果遇到反复执行的热点代码效率差一些，我们希望将这些热点代码提前的编译出来，需要使用到后端`JIT`编译器】 ，操作系统只能执行机器指令，若要我们的`Java`文件可以转换成机器指令，就需要使用到执行引擎。
+
+![](https://img-blog.csdnimg.cn/ce274aee4602480f8cb46bfb43307162.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
+

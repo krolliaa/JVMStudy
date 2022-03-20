@@ -94,3 +94,51 @@
 优点是跨平台，指令集小，编译器容易实现，缺点是性能不像寄存器指令集架构那样直接跟`CPU`打交道，高速缓存使得性能高效，实现同样的功能栈指令集架构需要更多的指令。
 
 总结来说使用栈指令集架构的最主要的原因就是：设计和实现较方便、跨平台，其它特点有指令集小、指令多、执行性能比寄存器指令集架构差
+
+## 1.5 `JVM`生命周期
+
+`JVM`生命周期可以简单地分为：启动、执行、结束
+
+- 虚拟机的启动
+
+  `JVM`通过引导类加载器创建一个初始类来完成启动。这个类是由虚拟机的具体实现指定的。
+
+  程序执行某个方法，比如这里的`main`方法：
+
+  1. 首先要将类加载到内容中，这是一个自定义类，这个类通过系统类加载器加载，比如这里的`JVMStartTest`
+
+  2. 该类中父类是`Object`类，`Object`类需要被引导类加载器加载，除了父类`Object`类，程序的运行还需要许多类的加载，所有依赖的类都加载之后，`JVM`才完成了启动，最早加载的类称为初始类。`Object`类并不是初始类，只是拿出来举个例子。
+
+     ```java
+     public class JVMStartTest {
+         public static void main(String[] args) {
+             System.out.println("123");
+         }
+     }
+     ```
+
+  系统类加载器 ------> 扩展类加载器 ------> 引导类加载器
+
+- 虚拟机的执行
+
+  一个`Java`程序的执行实际上是一个`JVM`进程在执行，可尝试运行一个程序睡眠一阵子使用`jps`查看当前运行的进程，然后等程序结束再运行一次`jps`会发现程序结束进程也就随之结束了。
+
+  也就是说，`Java`程序的运行其实就是`JVM`进程在运行，当前者终止时，`JVM`程序也就随之停止了。
+
+  ```java
+  public class JVMExecuteTest {
+      public static void main(String[] args) throws InterruptedException {
+          int i = 2 + 3;
+          Thread.sleep(10000);
+      }
+  }
+  ```
+
+  ![](https://img-blog.csdnimg.cn/c1ceba4bf13245ee8551475209673c8f.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+- 虚拟机的结束：`JVM`结束有多种原因
+
+  1. 正常情况，程序执行完毕后退出
+  2. 自定义情况，程序调用了`RunTime`或者`System.exit()`方法等`Java`安全管理中允许的操作从而退出
+  3. 错误情况：程序运行过程中遇到异常从而终止运行导致退出
+  4. 崩溃情况：操作系统、硬件原因导致`JVM`退出

@@ -149,6 +149,8 @@
 
 1. `Sun Classic VM`
 
+   在`JDK 1.0`发布，在`JDK 1.4`淘汰。
+
    世界上第一款商用`Java`虚拟机，只提供了解释器没有`JIT`后端编译器，执行的效率比较低下，需要逐行进行解释，即使是重复性的代码比如循环，也需要逐行解释，但是也行得通只是效率很低。`JIT`编译器可以处理热点代码，可以缓存热点代码编译后的机器指令也就是说可以大大提高效率。该款虚拟机想用`JIT`即时编译器就无法使用解释器，而且只能用外挂。
 
    - 为什么不能只用解释器？解释器是逐行解释代码，即使是重复性的代码也是如此，效率非常低下
@@ -170,7 +172,7 @@
 
    - 只在`Solaris`平台短暂使用，其它平台是还是`Sun Classic VM`，非常短暂，刚出来不久就被`HotSpot`取代了【注：`Solaris`是一个由`Sun`公司开发的操作系统，`Sun`后来被`Oracle`收购】
 
-3. `HotSpot VM`
+3. `HotSpot VM`【商用三大虚拟机之一】【默认虚拟机】
 
    - 最初由`Longview Technologies`小公司设计然后被`Sun`公司收购，后面`Sun`又被`Oracle`收购所以现在属于`Oracle`
 
@@ -181,9 +183,66 @@
      > 通过编译器与解释器协同工作，在最优化的程序响应时间与最佳执行性能中取得平衡
 
      即时编译器和解释器混合工作在程序最佳响应时间【解释器】和最佳性能执行【即时编译器`JIT`】也就是时间和效率中达到平衡。如何需要热点代码？通过计时器找到，然后触发即时编译器`JIT`。
+     
+   - 从`HotSpot VM`开始才有了方法区的概念
 
-4. `JRockit`
+4. `JRockit`【商用三大虚拟机之一】
 
-   由`BEA`开发但是现在该公司已经被`Oracle`收购了，专注于服务器端应用，这个跟`HotSpot`是不一样的，因为是服务器端，所以可以不关心缓存时间/暂停时间，所以没有解释器，只有即时编译器，所以它是世界上最快的`JVM`，`JRockit`提供毫秒级或微秒级`JVM`的响应时间，适合财务、军事指挥、电信网络的需要。
+   - 由`BEA`开发但是现在该公司已经被`Oracle`收购了，专注于服务器端应用，这个跟`HotSpot`是不一样的，因为是服务器端，所以可以不关心缓存时间/暂停时间，所以没有解释器，只有即时编译器，所以它是世界上最快的`JVM`，`JRockit`提供毫秒级或微秒级`JVM`的响应时间，适合财务、军事指挥、电信网络的需要。
 
-   `Oracle`说要整合`HotSpot`和`JRockit`，以`HotSpot`为基础，移植`JRockit`的优秀特性。
+
+   - `Oracle`说要整合`HotSpot`和`JRockit`，以`HotSpot`为基础，移植`JRockit`的优秀特性。
+
+5. `IBM J9`【商用三大虚拟机之一】
+
+   - 全称`IBM Technology for Java Virtual Machine`，简称`IT4J`，内部代号：`J9`
+
+   - 市场定位与`HotSpot`接近，服务器端、桌面应用、嵌入式等多用途`VM`广泛用于`IBM`的各种`Java`产品。自己号称是世界上最快的Java虚拟机。但其实只是在自家产品上运行相当快，这就好比`iOS`和`Android`两个系统一样，`iOS`很快但只是在其自家产品上，如果在`Android`手机的硬件上装`iOS`系统，反倒更慢了。
+
+6. `KVM和CDC/CLDC HotSpot`
+   - `Oracle`在`Java ME`产品线上的两款虚拟机为：`CDC/CLDC HotSpot Implementation VM`，`Java ME`是为机顶盒、移动电话和`PDA`之类嵌入式消费电子设备提供的Java语言平台
+   - `KVM`是`CLDC-HI`早期产品，现在手机市场基本就是被`iOS`和`Android`霸占，所处位置相当尴尬，主要面向的就是老人机、智能控制器、传感器、经济欠发达地区的功能手机
+
+7. `Azul VM`
+
+   - 与特定硬件平台绑定、软硬件配合的专用虚拟机 ---> 高性能`JVM`中的战斗机
+
+   - 由`Azul Systems`公司在`HotSpot`基础上进行大量改造，运行于`Azul Systems`公司转悠硬件`Vega`系统上的`JVM`
+
+   - 每个`Azul VM`都可以管理至少数十个处理器和数百`GB`内存的硬件资源【好猛】，并提供在巨大内存范围内实现可控的`GC`时间的垃圾收集器，专有硬件优化的线程调度等优秀特性
+
+     注：`Vega`一款用于实时视觉模拟、虚拟现实和普通视觉应用的工业软件
+
+   - `2010`年，`Azul Systems`公司开始从硬件转向软件，发布了自己的`Zing JVM`，可以在通用`X86`平台上提供接近于`Vega`系统的特型
+
+   - `Azul Systems`是一个神奇的公司
+
+8. `Liquid VM`
+
+   - 高性能`JVM`中的战斗机，由`BEA`公司开发并且运行在自己的`HyperVisor`自家的虚拟机监视器，因为自身实现了操作系统的必要功能包括线程调度、文件系统、网络支持等所以不需要操作系统的支持
+   - 其实`Liquid VM`就是`JRockit VE`，随着`JRockit VM`的停止开发，`Liquid VM`也停止了
+
+9. `Apache Harmony`
+
+   - 目前没有大规模使用该虚拟机的商用案例，它的`Java`类库吸纳进了`Android SDK`
+
+10. `Microsoft JVM`
+
+    - 目前`Windows`装的`JVM`都是`HotSpot`，该款虚拟机被`Sun`公司告了然后微软在`WindowsXP SP3`上抹掉了这个`VM`
+
+11. `TaobaoJVM`
+
+    - 已在天猫淘宝上线，严重依赖`Intel`处理器
+    - 阿里：国内使用`Java`最强大的公司。基于`OpenJDK`开发了定制版`Alibabajdk`简称`AJDK`，是整个阿里`Java`体系的基石
+    - `TaobaoJVM`开创了一种新的技术：`off-heap`，也就是`GCIH Gabage Collection Invisible Heap`，即将声明周期较长的`Java`对象从`Heap`转移到了`Heap`外，并且`GC`不能管理`GCIH`内部的`Java`对象，以此达到降低`GC`的回收频率和提升`GC`的回收效率
+    - `GCIH`中的对象还能在多个`Java`虚拟机进程中实现共享
+
+12. `Dalvik VM`
+
+    - 谷歌开发应用于`Android`发展迅猛
+
+13. `Graal VM`【未来虚拟机】
+
+    - 还是`Oracle`	---> `Oracle Labs`
+    - `Run Programs Faster Anywhere`，跨语言全栈虚拟机，可以作为任何语言的运行平台使用
+    - 如果说`HotSpot`有一天真的被取代，`Graal VM`的希望最大

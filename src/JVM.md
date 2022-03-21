@@ -2,7 +2,7 @@
 
 ## 1. `JVM`与`JAVA`体系结构
 
-## 1.1 `JVM`简单介绍
+### 1.1 `JVM`简单介绍
 
 - 运行着的线上系统突然卡死，系统无法访问，甚至直接报内存无法访问
 - 想解决线上`JVM GC`问题，但却无从下手
@@ -37,7 +37,7 @@
 
   ![](https://img-blog.csdnimg.cn/5d96dbd8c8b140e9b581b313ebdc0a25.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
 
-## 1.2 `JVM`整体结构
+### 1.2 `JVM`整体结构
 
 【类装载器子系统、运行时数据区、执行引擎】
 
@@ -49,7 +49,7 @@
 
 ![](https://img-blog.csdnimg.cn/ce274aee4602480f8cb46bfb43307162.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
 
-## 1.3 `Java`代码执行流程
+### 1.3 `Java`代码执行流程
 
 `Java`程序 ---> 字节码文件 ---> `JVM`
 
@@ -57,7 +57,7 @@
 2. 然后生成到`Java`虚拟机，通过类加载器、字节码校验器、执行引擎生成计算机可以识别的机器指令包括翻译字节码（解释执行）以及编译执行（`JIT`后端编译器）
 3. 最终落实到操作系统，由操作系统去完成
 
-## 1.4 `JVM`架构模型
+### 1.4 `JVM`架构模型
 
 `Java`编译器输入的指令流基本上是一种<font color="red">**栈的指令集架构**</font>，另外一种指令集架构则是基于**<font color="red">寄存器的指令集架构</font>**
 
@@ -95,7 +95,7 @@
 
 总结来说使用栈指令集架构的最主要的原因就是：设计和实现较方便、跨平台，其它特点有指令集小、指令多、执行性能比寄存器指令集架构差
 
-## 1.5 `JVM`生命周期
+### 1.5 `JVM`生命周期
 
 `JVM`生命周期可以简单地分为：启动、执行、结束
 
@@ -143,7 +143,7 @@
   3. 错误情况：程序运行过程中遇到异常从而终止运行导致退出
   4. 崩溃情况：操作系统、硬件原因导致`JVM`退出
 
-## 1.6 `JVM`发展历程
+### 1.6 `JVM`发展历程
 
 按照出现顺序排序：
 

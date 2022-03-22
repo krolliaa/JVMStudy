@@ -246,3 +246,79 @@
     - 还是`Oracle`	---> `Oracle Labs`
     - `Run Programs Faster Anywhere`，跨语言全栈虚拟机，可以作为任何语言的运行平台使用
     - 如果说`HotSpot`有一天真的被取代，`Graal VM`的希望最大
+
+## 2. 类加载器子系统
+
+整个`JVM`的体系结构如图所示：【做一个`JVM`必不可少的就是类加载器子系统和执行引擎】
+
+字节码文件经过类加载器子系统`Class Loader SubSystem`，加载【系统类加载器、扩展类加载器、引导类加载器】然后通过`Linking`的解析、准备、验证最后初始化，然就转到`Runtime Data Areas`运行时数据区再到执行引擎。
+
+![](https://img-blog.csdnimg.cn/747d05b5481c4db386239c3077e05181.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+### 2.1 类加载器子系统的作用
+
+> 类加载器子系统负责从文件系统/网络中加载字节码文件，字节码文件在开头有特定的文件标识
+>
+> 类加载器只负责`Class`文件的加载，至于可不可以运行要看执行引擎`Execution Engine`决定
+>
+> 加载的类信息存放于某一块称为方法区的内存空间。除了类信息外，方法区中还存放运行时常量池信息包括字符串字面量和数字常量【这部分常量信息是`Class`文件中常量池部分的内存映射】【`javap -v xxx.java` ---> `Constant Pool`】
+
+充当的角色就是将字节码文件转化为最终元数据。说白了作用就是加载字节码文件。
+
+1. `XXX.class`字节码文件存在于本地硬盘上，可以理解为设计师在纸上的模板，而最终这个模板在执行的时候需要加载到`JVM`中，根据这个字节码文件实例化出一个又一个的实例。
+2. 字节码文件加载到`JVM`中被称为`DNA`元数据模板，放在方法区
+3. 最终转变为元数据，这个加载的过程需要一个运输工具就是`Class Loader SubSystem`
+
+类加载器子系统加载过程：`加载Loading ---> 链接Linking（验证Verification - 准备Preparation - 解析 Resolution） ---> 初始化Initialization`
+
+![](https://img-blog.csdnimg.cn/89ee0661af6a4e8696976e5bb9eb1dd7.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+### 2.2 类加载器子系统的加载过程
+
+1. 加载`Loading`：
+
+   > 1. 通过一个类的全限定名获取定义此类的二进制字节流【简单点就是从硬盘中读取字节码文件】
+   > 2. 将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构【简单点就是把数据放到方法区】
+   > 3. 在内存中生成一个`java.lang.Class`对象，作为方法区这个类的各种数据的入口
+
+   加载字节码文件的方式：
+
+   - 从本地系统中直接加载
+   - 通过网络获取`Web Applet`
+   - 从压缩包中获取`jar、war`
+   - 动态代理等运行时计算获取
+   - 由其他文件生成 ---> `JSP`应用
+   - 从专有数据库中提取字节码文件
+   - 从加密文件中获取，典型的防止`Class`文件反编译的保护措施
+
+2. 链接`Linking`：
+
+   > 1. 验证`Verify`：确保字节码文件的字节流包含的信息符合当前虚拟机的要求，保证被加载类的正确性，不会危害虚拟机的自身安全。主要包括四种验证：文件格式验证、元数据验证、字节码验证、符号引用验证
+   >
+   >    之前我们说字节码文件在开头有特定的文件标识，可以通过十六进制查看专用软件查看，可以发现都是以`CAFEBABE`打头
+   >
+   >    ![](https://img-blog.csdnimg.cn/c8f0c54e40d74b09bed5b42ca1921cf7.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
+   >
+   > 2. 准备`Prepare`：为类变量分配内存并设置该类变量的默认初始值即零值。这里不包含用`final`修饰的`static`，因为`final`在编译的时候就会分配了，准备阶段会显式的初始化，也就是说`static final`修饰的会直接显示不会给一个默认值即零值。
+   >
+   >    准备阶段不会为实例变量分配初始化，因为这时候还没有对象呢。类变量会分配在方法区中，而实例变量会随着对象一起分配到`Java Heap`中。【初始化赋值阶段，不给实例变量初始化并且排除`static final`变量直接显式分配】
+   >
+   > 3. 解析`Resolve`：将常量池内的符号引用转换为直接引用的过程。事实上解析操作往往会伴随着`JVM`执行完初始化之后再执行。符号引用就是一组符号来描述所引用的目标。采用直接引用，直接指向目标的指针、相对偏移量或一个间接定位到目标的句柄。
+   >
+   >    接续动作主要针对类或接口、字段、类方法、接口方法、方法类型等。对应常量池中的`CONSTANT_CLASS_INFO`、`CONSTANT_FIELDREF_INFO`、`CONSTANT_METHODREF_INFO`等。
+   >
+   >    其实就是引导类加载器加载其它如`Object`类等类构成直接引用
+
+3. 初始化`Initialization`：
+
+   > - 初始化阶段就是执行<font color="red">**类构造器方法**</font>`<clinit>()`的过程【不是我们写的那个构造器不需要我们定义的，在`Bytecoder Viewer`有构造器可以用`jclasslib`插件看到】
+   >
+   > - 此方法不需定义，是`javac`编译器自动收集类中的所有类变量的赋值动作和静态代码块中的语句合并而来，如果没有在链接`Linking`中的准备`Prepare`阶段中赋值以及没有在静态代码块中赋值就没有`<clinit>()`
+   >
+   > - 构造器方法中指令按语句在源文件中出现的顺序执行
+   >
+   > - `<clinit>()`不同于类的构造器。（关联：构造器是虚拟机视角下的`<init>()`）
+   >
+   > - 若该类具有父类，`JVM`会保证子类的`<clinit>()`执行前，父类的`<clinit>()`已经执行完毕，子类的执行一定是晚于父类的执行
+   >
+   > - 虚拟机必须保证一个类的`<clinit>()`方法在多线程下被同步加锁
